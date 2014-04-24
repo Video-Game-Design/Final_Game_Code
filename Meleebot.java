@@ -17,9 +17,8 @@ public class Meleebot extends Mob {
 	public Meleebot(float myx, float myy) throws SlickException 
 	{
 		hp = 70;
-		money = 5;
+		maxhp=hp;
 		seePlayer = false;
-		dmg = 3;
 		direction = "Down";
 		x=myx;
 		y=myy;
@@ -39,8 +38,10 @@ public class Meleebot extends Mob {
 		sprite.setCurrentFrame(1);
 		attackTimer=0;
 		attacksfx=new Sound("res/sound/meleebotsfx"+((int)(Math.random()*2))+".wav");
+		canMoveX=true;
+		canMoveY=true;
 	}
-	public void ai(Player player, ArrayList<Projectile> projectiles)
+	public void ai(Player player, ArrayList<Projectile> projectiles, ArrayList<Wall> walls, ArrayList<Mob> mobs)
 	{
 		float i = (player.x-x);
 		float j = (player.y-y);
@@ -53,8 +54,63 @@ public class Meleebot extends Mob {
 			if(!(inner.intersects(bot)||inner.contains(bot.getX(),bot.getY())))
 			{
 				double magnitude = Math.sqrt(Math.pow(i,2) + Math.pow(j,2));
-				x = (float) (x + ((i/magnitude)*3));
-				y = (float) (y + ((j/magnitude)*3));
+				canMoveX=true;
+				canMoveY=true;
+				for(Wall wally: walls)
+				{
+					Rectangle box = new Rectangle(wally.x,wally.y,wally.image.getWidth(),wally.image.getHeight());
+					float xhalf = image.getWidth()/2;
+					float yhalf = image.getHeight()/2;
+					float xqrtr = xhalf/2;
+					float yqrtr = xhalf/2;
+					boolean a=(box.contains((float)(x + ((i/magnitude)*1.5*2)),y));
+					boolean b=(box.contains((float)(x+image.getWidth() + ((i/magnitude)*1.5*2)),y));
+					boolean c=(box.contains((float)(x + ((i/magnitude)*1.5*2)),y+image.getHeight()));
+					boolean d=(box.contains((float)(x+image.getWidth() + ((i/magnitude)*1.5*2)),y+image.getHeight()));
+					boolean e=(box.contains((float)(x+xhalf + ((i/magnitude)*1.5*2)),y));
+					boolean f=(box.contains((float)(x+xhalf + ((i/magnitude)*1.5*2)),y+image.getHeight()));
+					boolean g=(box.contains((float)(x + ((i/magnitude)*1.5*2)),y+yhalf));
+					boolean h=(box.contains((float)(x+image.getWidth() + ((i/magnitude)*1.5*2)),y+yhalf));
+					boolean k=(box.contains((float)(x +xqrtr+ ((i/magnitude)*1.5*2)),y));
+					boolean l=(box.contains((float)(x +xqrtr*3+ ((i/magnitude)*1.5*2)),y));
+					boolean m=(box.contains((float)(x +xqrtr+ ((i/magnitude)*1.5*2)),y+image.getHeight()));
+					boolean n=(box.contains((float)(x +xqrtr*3+ ((i/magnitude)*1.5*2)),y+image.getHeight()));
+					boolean o=(box.contains((float)(x + ((i/magnitude)*1.5*2)),y+yqrtr));
+					boolean p=(box.contains((float)(x + ((i/magnitude)*1.5*2)),y+yqrtr*3));
+					boolean q=(box.contains((float)(x+image.getWidth() + ((i/magnitude)*1.5*2)),y+yqrtr));
+					boolean r=(box.contains((float)(x+image.getWidth() + ((i/magnitude)*1.5*2)),y+yqrtr*3));
+					
+					if (a||b||c||d||e||f||g||h||k||l||m||n||o||p||q||r)
+					{
+						canMoveX=false;
+					}
+					a=(box.contains(x,(float)(y + ((j/magnitude)*1.5*2))));
+					b=(box.contains(x+image.getWidth(),(float)(y + ((j/magnitude)*1.5*2))));
+					c=(box.contains(x,(float)(y+image.getHeight() + ((j/magnitude)*1.5*2))));
+					d=(box.contains(x+image.getWidth(),(float)(y+image.getHeight() + ((j/magnitude)*1.5*2))));
+					e=(box.contains(x+xhalf,(float)(y + ((j/magnitude)*1.5*2))));
+					f=(box.contains(x+xhalf,(float)(y+image.getHeight() + ((j/magnitude)*1.5*2))));
+					g=(box.contains(x,(float)(y +yhalf+ ((j/magnitude)*1.5*2))));
+					h=(box.contains(x+image.getWidth(),(float)(y +yhalf+ ((j/magnitude)*1.5*2))));
+					k=(box.contains(x+xqrtr,(float)(y + ((j/magnitude)*1.5*2))));
+					l=(box.contains(x+xqrtr*3,(float)(y + ((j/magnitude)*1.5*2))));
+					m=(box.contains(x+xqrtr,(float)(y +image.getHeight()+ ((j/magnitude)*1.5*2))));
+					n=(box.contains(x+xqrtr*3,(float)(y +image.getHeight()+ ((j/magnitude)*1.5*2))));;
+					o=(box.contains(x,(float)(y +yqrtr+ ((j/magnitude)*1.5*2))));
+					p=(box.contains(x,(float)(y +yqrtr*3+ ((j/magnitude)*1.5*2))));
+					q=(box.contains(x+image.getWidth(),(float)(y +yqrtr+ ((j/magnitude)*1.5*2))));
+					r=(box.contains(x+image.getWidth(),(float)(y +yqrtr*3+ ((j/magnitude)*1.5*2))));
+					if (a||b||c||d||e||f||g||h||k||l||m||n||o||p||q||r)
+					{
+						canMoveY=false;
+						break;
+					}
+						
+				}
+				if(canMoveX)
+					x = (float) (x + ((i/magnitude)*3));
+					if(canMoveY)
+					y = (float) (y + ((j/magnitude)*3));
 				sprite=idle;
 				if (((angle < (Math.PI/2)) && (angle > (Math.PI/4))) || ((angle > (Math.PI/-2)) && (angle < (Math.PI/-4))))
 				{ 
